@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TikTok Videos by Hashtag</title>
+</head>
+<body>
+  <h1>TikTok Videos by Hashtag</h1>
+  <div id="container">
+    <div id="input-container">
+      <h2>Enter Hashtag:</h2><input type="text" id="hashtag" placeholder="Enter hashtag"> <button id="searchButton">Search</button>
+    </div>
+    <div id="results-container">
+      <h2>Results:</h2>
+      <div id="results"></div>
+    </div>
+  </div>
+  <script>
+        const searchButton = document.getElementById('searchButton');
+        const hashtagInput = document.getElementById('hashtag');
+        const resultsContainer = document.getElementById('results');
+
+        searchButton.addEventListener('click', () => {
+            const hashtag = hashtagInput.value;
+            const url = `https://www.tiktok.com/tag/${hashtag}`;
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', url);
+            xhr.onload = () => {
+                if (xhr.status === 200) {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(xhr.responseText, 'text/html');
+                    const videos = doc.querySelectorAll('#main .video-box');
+
+                    resultsContainer.innerHTML = '';
+
+                    videos.forEach(video => {
+                        const title = video.querySelector('.video-item__title').innerText;
+                        const link = video.querySelector('.video-item__cover-link').href;
+                        const description = video.querySelector('.video-item__desc').innerText;
+                        const image = video.querySelector('.video-item__cover-image').src;
+
+                        const resultItem = document.createElement('div');
+                        resultItem.classList.add('result-item');
+
+                        const titleElement = document.createElement('h3');
+                        titleElement.innerText = title;
+
+                        const linkElement = document.createElement('a');
+                        linkElement.href = link;
+                        linkElement.innerText = link;
+
+                        const descriptionElement = document.createElement('p');
+                        descriptionElement.innerText = description;
+
+                        const imageElement = document.createElement('img');
+                        imageElement.src = image;
+
+                        resultItem.appendChild(titleElement);
+                        resultItem.appendChild(linkElement);
+                        resultItem.appendChild(descriptionElement);
+                        resultItem.appendChild(imageElement);
+
+                        resultsContainer.appendChild(resultItem);
+                    });
+                }
+            };
+            xhr.send();
+        });
+  </script>
+</body>
+</html>
